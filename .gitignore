@@ -1,5 +1,5 @@
 /build
 /node_modules
-/.idea
 /pkg
+/.idea
 .DS_Store

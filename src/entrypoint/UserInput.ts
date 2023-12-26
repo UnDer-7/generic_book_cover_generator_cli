@@ -1,15 +1,35 @@
 import yargs from 'yargs';
+import fs from "fs";
 
-export function getUserInfo(): {bookPath: string} {
+export function getUserInfo(): {bookPath: string, outPath: string} {
+    const defaultOutPath = `${__dirname}/book-covers`;
     const argv = yargs(process.argv.slice(2))
         .options({
-            f: { type: 'string', describe: 'Book folder', demandOption: true }
+            f: { type: 'string', describe: 'Book folder', demandOption: true },
+            o: { type: 'string', describe: 'Generated covers output path', default: defaultOutPath}
         }).parseSync();
 
-    return { bookPath: sanitizeBookPath(argv.f) }
+    if (argv.o === defaultOutPath) {
+        createDefaultOutPath(defaultOutPath)
+    }
+
+    return {
+        bookPath: sanitizePath(argv.f),
+        outPath: sanitizePath(argv.o),
+    }
 }
 
-function sanitizeBookPath(path: string): string {
+function createDefaultOutPath(path: string): void {
+    const pathExits = fs.existsSync(path);
+    console.log('does need to create default output path: ', pathExits)
+    if (!path) {
+        console.log('Starting to creating default output path. ', path)
+        fs.mkdirSync(path);
+        console.log('Finished creating default output path')
+    }
+}
+
+function sanitizePath(path: string): string {
     if (path.startsWith("/")) {
         return path;
     }

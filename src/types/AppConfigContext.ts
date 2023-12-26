@@ -1,10 +1,11 @@
-export interface AppConfig {
+export interface AppConfigContext {
     path: AppPathConfig
-    fontFamily: string
+    fontFamily: string,
 }
 
 export interface AppPathConfig {
     bookFolder: string,
     backgroundImage: string,
-    font: string
+    font: string,
+    bookCoversOutput: string
 }

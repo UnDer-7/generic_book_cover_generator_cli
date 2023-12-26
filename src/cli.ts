@@ -1,29 +1,38 @@
 #! /usr/bin/env node
 
 import { getUserInfo } from "./entrypoint/UserInput";
-import {AppConfig} from "./types/AppConfig";
+import {AppConfigContext} from "./types/AppConfigContext";
 import {DeepFreeze} from "./helper/DeepFreeze";
 import {DeepReadonly} from "ts-essentials";
-import {Run} from "./helper/Run";
+import {RunAsync} from "./helper/Run";
+import {CreateImage} from "./service/CreateImage";
 
-function createAppConfig(): DeepReadonly<AppConfig> {
-    const userInfo = getUserInfo();
-    const appConfig: AppConfig = {
+function createAppConfig(): DeepReadonly<AppConfigContext> {
+    const {
+        bookPath: bookFolder,
+        outPath: bookCoversOutput,
+    } = getUserInfo();
+
+    const appConfig: AppConfigContext = {
         fontFamily: 'Merriweather',
         path: {
-            bookFolder: userInfo.bookPath,
-            font: './resources/font/Merriweather-Black.ttf',
-            backgroundImage: './resources/background/black_background.jpg'
+            bookFolder,
+            bookCoversOutput,
+            font: `${__dirname}/resources/font/Merriweather-Black.ttf`,
+            backgroundImage: `${__dirname}/resources/background/black_background.jpg`,
         }
     }
 
     return DeepFreeze(appConfig);
 }
 
-Run(() => {
+RunAsync(async () => {
     console.log('Starting script');
 
     const appConfig = createAppConfig();
+
+    // ToDo: PKG not working
+    await CreateImage(appConfig, 'Chapter', '2');
 
     console.log('App Config: ', appConfig);
 });
