@@ -31,3 +31,4 @@ docker_volume/
 !sample.env
 
 /out
+/bin

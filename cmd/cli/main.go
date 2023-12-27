@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"embed"
 	"image"
 	"image/color"
 	"image/draw"
@@ -13,6 +14,9 @@ import (
 	"github.com/golang/freetype/truetype"
 	_ "golang.org/x/image/math/fixed"
 )
+
+//go:embed assets
+var assets embed.FS
 
 func calculateTextWidth(face *truetype.Font, text string, fontSize float64) int {
 	opts := truetype.Options{
@@ -33,7 +37,7 @@ func calculateTextWidth(face *truetype.Font, text string, fontSize float64) int 
 
 func main() {
 	// Open the JPEG file
-	file, err := os.Open("./assets/background/black_background.jpg")
+	file, err := assets.Open("assets/background/black_background.jpg")
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +55,7 @@ func main() {
 	draw.Draw(rgba, rgba.Bounds(), img, image.Point{}, draw.Src)
 
 	// Load the font
-	fontBytes, err := os.ReadFile("./assets/font/Merriweather-Black.ttf")
+	fontBytes, err := assets.ReadFile("assets/font/Merriweather-Black.ttf")
 	if err != nil {
 		panic(err)
 	}
