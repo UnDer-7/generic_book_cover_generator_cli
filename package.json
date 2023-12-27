@@ -12,7 +12,6 @@
   },
   "pkg": {
     "scripts": "build/**/*.js",
-    "assets": "build/resources/**/*",
     "targets": ["linux", "macos", "win"]
   },
   "keywords": [],

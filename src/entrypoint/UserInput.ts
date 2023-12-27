@@ -1,8 +1,10 @@
 import yargs from 'yargs';
 import fs from "fs";
+import * as path from "path";
+import {CurrentPath} from "../helper/CurrentPath";
 
 export function getUserInfo(): {bookPath: string, outPath: string} {
-    const defaultOutPath = `${__dirname}/book-covers`;
+    const defaultOutPath = `${CurrentPath()}/book_covers`;
     const argv = yargs(process.argv.slice(2))
         .options({
             f: { type: 'string', describe: 'Book folder', demandOption: true },
