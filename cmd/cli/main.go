@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 
+	"generic_book_cover_generator.gorillaroxo.com.br/internal"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	_ "golang.org/x/image/math/fixed"
@@ -18,24 +19,12 @@ import (
 //go:embed assets
 var assets embed.FS
 
-func calculateTextWidth(face *truetype.Font, text string, fontSize float64) int {
-	opts := truetype.Options{
-		Size: fontSize,
-	}
-	faceOptions := truetype.NewFace(face, &opts)
-
-	width := 0.0
-	for _, x := range text {
-		aw, ok := faceOptions.GlyphAdvance(rune(x))
-		if ok != true {
-			continue
-		}
-		width += float64(aw) / 64.0
-	}
-	return int(width)
+func main() {
+	internal.AskUserInfo()
+	//generateImg()
 }
 
-func main() {
+func generateImg() {
 	// Open the JPEG file
 	file, err := assets.Open("assets/background/black_background.jpg")
 	if err != nil {
@@ -126,4 +115,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func calculateTextWidth(face *truetype.Font, text string, fontSize float64) int {
+	opts := truetype.Options{
+		Size: fontSize,
+	}
+	faceOptions := truetype.NewFace(face, &opts)
+
+	width := 0.0
+	for _, x := range text {
+		aw, ok := faceOptions.GlyphAdvance(rune(x))
+		if ok != true {
+			continue
+		}
+		width += float64(aw) / 64.0
+	}
+	return int(width)
 }
