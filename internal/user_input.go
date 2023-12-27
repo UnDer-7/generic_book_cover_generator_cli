@@ -10,8 +10,7 @@ import (
 func AskUserInfo() {
 	defaultOutPath := getDefaultOutPath()
 
-	fmt.Printf("Default Output folder: %s", defaultOutPath)
-	fmt.Print("Output folder: \n")
+	fmt.Printf("Default Output folder: %s\nOutput folder (Just hit enter to use default path): ", defaultOutPath)
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	if err != nil {
