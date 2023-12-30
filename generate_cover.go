@@ -2,38 +2,29 @@ package main
 
 import (
 	"bufio"
-	"embed"
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
+	_ "golang.org/x/image/math/fixed"
 	"image"
 	"image/color"
 	"image/draw"
 	"image/jpeg"
 	"os"
 	"strings"
-
-	"generic_book_cover_generator.gorillaroxo.com.br/internal"
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
-	_ "golang.org/x/image/math/fixed"
 )
 
-//go:embed assets
-var assets embed.FS
-
-func main() {
-	internal.AskUserInfo()
-	//generateImg()
-}
-
-func generateImg() {
+func (app *AppContext) generateImg(chapterNumber, fileOutputName string) {
 	// Open the JPEG file
-	file, err := assets.Open("assets/background/black_background.jpg")
+	file, err := app.resources.Open(app.path.backgroundImage)
 	if err != nil {
+		app.logger.Warn("Error while opening black_background")
 		panic(err)
 	}
 	defer file.Close()
 
 	img, err := jpeg.Decode(file)
 	if err != nil {
+		app.logger.Warn("Error while decoding black_background")
 		panic(err)
 	}
 
@@ -44,13 +35,15 @@ func generateImg() {
 	draw.Draw(rgba, rgba.Bounds(), img, image.Point{}, draw.Src)
 
 	// Load the font
-	fontBytes, err := assets.ReadFile("assets/font/Merriweather-Black.ttf")
+	fontBytes, err := app.resources.ReadFile(app.path.font)
 	if err != nil {
+		app.logger.Warn("Error while reading font file")
 		panic(err)
 	}
 
 	font, err := freetype.ParseFont(fontBytes)
 	if err != nil {
+		app.logger.Warn("Error while parsing font file")
 		panic(err)
 	}
 
@@ -63,7 +56,7 @@ func generateImg() {
 	c.SetSrc(image.NewUniform(color.White))
 
 	// Define the text
-	text := "Chapter\n\n5"
+	text := "Chapter\n\n" + chapterNumber
 	lines := strings.Split(text, "\n")
 
 	// Find the maximum font size that fits the width of the image
@@ -99,8 +92,9 @@ func generateImg() {
 	}
 
 	// Save the image to a new file
-	outFile, err := os.Create("./out/output_centered.jpg")
+	outFile, err := os.Create(app.path.bookCoversOutput + "/" + fileOutputName + ".jpg")
 	if err != nil {
+		app.logger.Warn("Error while creating output file")
 		panic(err)
 	}
 	defer outFile.Close()
@@ -109,10 +103,12 @@ func generateImg() {
 	buf := bufio.NewWriter(outFile)
 	err = jpeg.Encode(buf, rgba, nil)
 	if err != nil {
+		app.logger.Warn("Error while encoding output file")
 		panic(err)
 	}
 	err = buf.Flush()
 	if err != nil {
+		app.logger.Warn("Error while flushing")
 		panic(err)
 	}
 }
