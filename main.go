@@ -26,6 +26,7 @@ type AppContext struct {
 	wg                               sync.WaitGroup
 	context                          context.Context
 	skipFileWhenChapterNumberNotFund bool
+	processOnlyBooksWithExtension    string
 }
 
 //go:embed assets
@@ -65,6 +66,7 @@ func configureFlags(appCtx *AppContext) error {
 	flag.BoolVar(&appCtx.useMultiThreading, "t", false, "Whether to create the chapters covers using multi threading or not. TRUE=Multi Thread | FALSE=Single Thread")
 	flag.BoolVar(&appCtx.shouldCreateBookCoversOutput, "c", false, "Create output cover folder if does not exists")
 	flag.BoolVar(&appCtx.skipFileWhenChapterNumberNotFund, "s", true, "Skip file when chapter number is not found")
+	flag.StringVar(&appCtx.processOnlyBooksWithExtension, "e", ".cbz", "File extensions to be used in the processing (pass with dot, ex: .cbz, .jpg, etc...)")
 
 	flag.Parse()
 

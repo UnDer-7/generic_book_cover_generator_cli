@@ -15,6 +15,7 @@ func (app *AppContext) init() {
 
 	names := app.getFileNames()
 
+	// ToDo: Add Option to receive cover name by args and generate a cover using that name
 	if app.useMultiThreading {
 		app.runInMultiThreadMode(names)
 	} else {
@@ -38,6 +39,7 @@ func (app *AppContext) runInMultiThreadMode(fileNames []string) {
 
 func (app *AppContext) runInSingleThreadMode(fileNames []string) {
 	for _, name := range fileNames {
+		// ToDo: Add Option for when a processing of file throws an error it doesnt stop the whole script
 		app.processSingleChapter(name)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 )
 
@@ -18,13 +19,17 @@ func (app *AppContext) getFileNames() []string {
 		panic(err)
 	}
 
-	var fileName []string
+	var fileNames []string
 
 	for _, entry := range entries {
-		fileName = append(fileName, entry.Name())
+		fileName := entry.Name()
+		fileExtension := filepath.Ext(fileName)
+		if fileExtension == app.processOnlyBooksWithExtension {
+			fileNames = append(fileNames, fileName)
+		}
 	}
 
-	return fileName
+	return fileNames
 }
 
 func (app *AppContext) extractChapterNumberFromFile(fileName string) (string, error) {
