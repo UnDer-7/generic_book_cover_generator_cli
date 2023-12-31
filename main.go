@@ -15,11 +15,12 @@ type AppPaths struct {
 }
 
 type AppContext struct {
-	path                     *AppPaths
-	resources                embed.FS
-	logger                   *slog.Logger
-	regexChapterNumberPrefix string
-	useMultiThreading        bool
+	path                         *AppPaths
+	resources                    embed.FS
+	logger                       *slog.Logger
+	regexChapterNumberPrefix     string
+	useMultiThreading            bool
+	shouldCreateBookCoversOutput bool
 }
 
 //go:embed assets
@@ -48,9 +49,10 @@ func configureFlags(appCtx *AppContext) error {
 	}
 
 	flag.StringVar(&appCtx.path.bookFolder, "book", defaultPath, "Path where the books are located")
-	flag.StringVar(&appCtx.path.bookCoversOutput, "out", defaultPath, "Path where the generated covers will be")
+	flag.StringVar(&appCtx.path.bookCoversOutput, "out", defaultPath, "Folder path where the generated covers will be")
 	flag.StringVar(&appCtx.regexChapterNumberPrefix, "prefix", defaultChapterPrefix, "Name that prefix the chapter number")
 	flag.BoolVar(&appCtx.useMultiThreading, "t", false, "Whether to create the chapters covers using multi threading or not. TRUE=Multi Thread | FALSE=Single Thread")
+	flag.BoolVar(&appCtx.shouldCreateBookCoversOutput, "c", false, "Create output cover folder if does not exists")
 
 	flag.Parse()
 

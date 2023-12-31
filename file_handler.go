@@ -35,3 +35,33 @@ func (app *AppContext) extractChapterNumberFromFile(fileName string) (string, er
 	errMsg := fmt.Sprintf("could not find chapter number in the file name [ regexPattnerUsed: %s | fileNameUsed: %s ]", strRgx, fileName)
 	return "", errors.New(errMsg)
 }
+
+func (app *AppContext) createOutputCoverDir() {
+	if app.shouldCreateBookCoversOutput {
+		exists, err := app.bookCoversOutputExists()
+		if err != nil {
+			panic("could no create book cover output, because an error occurred while checking if book covers output already exists")
+		}
+
+		if !exists {
+			err := os.MkdirAll(app.path.bookCoversOutput, os.ModePerm)
+			if err != nil {
+				app.logger.Warn("Could not create book cover output")
+				panic(err)
+			}
+		}
+	}
+}
+
+func (app *AppContext) bookCoversOutputExists() (bool, error) {
+	_, err := os.Stat(app.path.bookCoversOutput)
+	if err == nil {
+		return true, nil
+	}
+
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+
+	return false, err
+}

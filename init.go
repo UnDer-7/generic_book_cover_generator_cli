@@ -6,13 +6,18 @@ import (
 )
 
 func (app *AppContext) init() {
+	defer app.measureExecutionTime()()
+
+	app.createOutputCoverDir()
+	app.validateIfOutputDirExists()
+
 	names := app.getFileNames()
 
 	for _, name := range names {
 		if app.useMultiThreading {
-			app.processSingleChapter(name)
-		} else {
 			app.runInMultiThreadMode(name)
+		} else {
+			app.processSingleChapter(name)
 		}
 
 	}
