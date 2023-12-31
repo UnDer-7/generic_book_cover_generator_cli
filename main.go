@@ -27,6 +27,7 @@ type AppContext struct {
 	context                          context.Context
 	skipFileWhenChapterNumberNotFund bool
 	processOnlyBooksWithExtension    string
+	customCoverName                  string
 }
 
 //go:embed assets
@@ -67,6 +68,7 @@ func configureFlags(appCtx *AppContext) error {
 	flag.BoolVar(&appCtx.shouldCreateBookCoversOutput, "c", false, "Create output cover folder if does not exists")
 	flag.BoolVar(&appCtx.skipFileWhenChapterNumberNotFund, "s", true, "Skip file when chapter number is not found")
 	flag.StringVar(&appCtx.processOnlyBooksWithExtension, "e", ".cbz", "File extensions to be used in the processing (pass with dot, ex: .cbz, .jpg, etc...)")
+	flag.StringVar(&appCtx.customCoverName, "custom", "", "A custom cover name to be used in the image generation")
 
 	flag.Parse()
 

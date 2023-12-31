@@ -15,14 +15,17 @@ func (app *AppContext) init() {
 
 	names := app.getFileNames()
 
-	// ToDo: Add Option to receive cover name by args and generate a cover using that name
-	if app.useMultiThreading {
-		app.runInMultiThreadMode(names)
-	} else {
-		app.runInSingleThreadMode(names)
+	if len(app.customCoverName) > 0 {
+		app.processSingleChapterCustom()
+		return
 	}
 
-	app.wg.Wait()
+	if app.useMultiThreading {
+		app.runInMultiThreadMode(names)
+		return
+	}
+
+	app.runInSingleThreadMode(names)
 }
 
 func (app *AppContext) runInMultiThreadMode(fileNames []string) {
@@ -44,6 +47,15 @@ func (app *AppContext) runInSingleThreadMode(fileNames []string) {
 	}
 }
 
+func (app *AppContext) processSingleChapterCustom() {
+	app.logger.Info(fmt.Sprintf("processing custom cover %s", app.customCoverName))
+
+	// ToDo: fix bug. When passing: -custom="Last of the day \n now plz" the "\n" is ignored and doesnt break line
+	app.generateImg(app.customCoverName, "custom_cover")
+
+	app.logger.Info(fmt.Sprintf("finished processing custom cover %s", app.customCoverName))
+}
+
 func (app *AppContext) processSingleChapter(fileName string) {
 	chapterNumber, err := app.extractChapterNumberFromFile(fileName)
 	if err != nil {
@@ -60,6 +72,8 @@ func (app *AppContext) processSingleChapter(fileName string) {
 	extension := filepath.Ext(fileName)
 	fileNameWithoutExtension := strings.TrimSuffix(fileName, extension)
 
-	app.generateImg(chapterNumber, fileNameWithoutExtension)
+	imageText := "Chapter\n\n" + chapterNumber
+	app.generateImg(imageText, fileNameWithoutExtension)
+
 	app.logger.Info(fmt.Sprintf("finished processing chapter %s", chapterNumber))
 }

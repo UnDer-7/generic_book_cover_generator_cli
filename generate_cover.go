@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-func (app *AppContext) generateImg(chapterNumber, fileOutputName string) {
+func (app *AppContext) generateImg(imageText, fileOutputName string) {
 	// Open the JPEG file
 	file, err := app.resources.Open(app.path.backgroundImage)
 	if err != nil {
@@ -56,8 +56,8 @@ func (app *AppContext) generateImg(chapterNumber, fileOutputName string) {
 	c.SetSrc(image.NewUniform(color.White))
 
 	// Define the text
-	text := "Chapter\n\n" + chapterNumber
-	lines := strings.Split(text, "\n")
+
+	lines := strings.Split(imageText, "\n")
 
 	// Find the maximum font size that fits the width of the image
 	maxWidth := rgba.Bounds().Dx()
