@@ -35,7 +35,7 @@ func main() {
 		panic(err)
 	}
 
-	appCtx.generateImg("54", "tmp")
+	appCtx.init()
 }
 
 func configurePaths(appCtx *AppContext) error {
