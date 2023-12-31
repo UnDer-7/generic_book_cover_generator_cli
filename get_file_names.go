@@ -1,7 +1,10 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"os"
+	"regexp"
 )
 
 func (app *AppContext) getFileNames() []string {
@@ -18,4 +21,17 @@ func (app *AppContext) getFileNames() []string {
 	}
 
 	return fileName
+}
+
+func (app *AppContext) extractChapterNumberFromFile(fileName string) (string, error) {
+	strRgx := app.regexChapterNumberPrefix + `(\d+)`
+	pattern := regexp.MustCompile(strRgx)
+	matches := pattern.FindStringSubmatch(fileName)
+
+	if len(matches) > 1 {
+		return matches[1], nil
+	}
+
+	errMsg := fmt.Sprintf("could not find chapter number in the file name [ regexPattnerUsed: %s | fileNameUsed: %s ]", strRgx, fileName)
+	return "", errors.New(errMsg)
 }
