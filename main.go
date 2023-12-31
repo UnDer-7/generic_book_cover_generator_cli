@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"flag"
 	"log/slog"
 	"os"
+	"sync"
 )
 
 type AppPaths struct {
@@ -21,6 +23,8 @@ type AppContext struct {
 	regexChapterNumberPrefix     string
 	useMultiThreading            bool
 	shouldCreateBookCoversOutput bool
+	wg                           sync.WaitGroup
+	context                      context.Context
 }
 
 //go:embed assets
@@ -30,7 +34,10 @@ func main() {
 	appCtx := &AppContext{
 		path:      &AppPaths{},
 		resources: assets,
-		logger:    slog.New(slog.NewTextHandler(os.Stdout, nil)),
+		context:   context.Background(),
+		logger: slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		})),
 	}
 
 	err := configureFlags(appCtx)
@@ -48,6 +55,7 @@ func configureFlags(appCtx *AppContext) error {
 		return err
 	}
 
+	// todo: config log level
 	flag.StringVar(&appCtx.path.bookFolder, "book", defaultPath, "Path where the books are located")
 	flag.StringVar(&appCtx.path.bookCoversOutput, "out", defaultPath, "Folder path where the generated covers will be")
 	flag.StringVar(&appCtx.regexChapterNumberPrefix, "prefix", defaultChapterPrefix, "Name that prefix the chapter number")

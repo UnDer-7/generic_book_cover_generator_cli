@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 )
@@ -13,36 +14,43 @@ func (app *AppContext) init() {
 
 	names := app.getFileNames()
 
-	for _, name := range names {
-		if app.useMultiThreading {
-			app.runInMultiThreadMode(name)
-		} else {
-			app.processSingleChapter(name)
-		}
-
+	if app.useMultiThreading {
+		app.runInMultiThreadMode(names)
+	} else {
+		app.runInSingleThreadMode(names)
 	}
 
+	app.wg.Wait()
 }
 
-func (app *AppContext) getChapterNumberAndFileNameWithoutExtension(fileName string) (chapterNumber, fileNameWithoutExtension string) {
+func (app *AppContext) runInMultiThreadMode(fileNames []string) {
+	for _, name := range fileNames {
+		app.wg.Add(1)
+		go func(fileName string) {
+			defer app.wg.Done()
+			app.processSingleChapter(fileName)
+		}(name)
+	}
+
+	app.wg.Wait()
+}
+
+func (app *AppContext) runInSingleThreadMode(fileNames []string) {
+	for _, name := range fileNames {
+		app.processSingleChapter(name)
+	}
+}
+
+func (app *AppContext) processSingleChapter(fileName string) {
 	chapterNumber, err := app.extractChapterNumberFromFile(fileName)
 	if err != nil {
 		panic(err)
 	}
 
+	app.logger.Info(fmt.Sprintf("processing chapter %s", chapterNumber))
 	extension := filepath.Ext(fileName)
-	fileNameWithoutExtension = strings.TrimSuffix(fileName, extension)
-
-	return chapterNumber, fileNameWithoutExtension
-}
-
-func (app *AppContext) processSingleChapter(fileName string) {
-	chapterNumber, fileNameWithoutExtension := app.getChapterNumberAndFileNameWithoutExtension(fileName)
+	fileNameWithoutExtension := strings.TrimSuffix(fileName, extension)
 
 	app.generateImg(chapterNumber, fileNameWithoutExtension)
-}
-
-func (app *AppContext) runInMultiThreadMode(fileName string) {
-	// ToDo: Write code
-	panic("Not supported yet")
+	app.logger.Info(fmt.Sprintf("finished processing chapter %s", chapterNumber))
 }
