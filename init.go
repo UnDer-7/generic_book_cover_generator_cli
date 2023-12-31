@@ -29,15 +29,20 @@ func (app *AppContext) init() {
 }
 
 func (app *AppContext) runInMultiThreadMode(fileNames []string) {
+	autoFormGoroutinesOpened := 0
+	app.logger.Debug("starting multi threaded processing")
 	for _, name := range fileNames {
 		app.wg.Add(1)
+		autoFormGoroutinesOpened = autoFormGoroutinesOpened + 1
 		go func(fileName string) {
 			defer app.wg.Done()
 			app.processSingleChapter(fileName)
 		}(name)
 	}
 
+	app.logger.Debug(fmt.Sprintf("Amout of Go Routines opened %d", autoFormGoroutinesOpened))
 	app.wg.Wait()
+	app.logger.Debug("finished multi threaded processing")
 }
 
 func (app *AppContext) runInSingleThreadMode(fileNames []string) {
