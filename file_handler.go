@@ -7,6 +7,10 @@ import (
 	"regexp"
 )
 
+var (
+	ErrChapterNumberNotFound = errors.New("could not find chapter number in the file name")
+)
+
 func (app *AppContext) getFileNames() []string {
 	entries, err := os.ReadDir(app.path.bookFolder)
 	if err != nil {
@@ -32,8 +36,9 @@ func (app *AppContext) extractChapterNumberFromFile(fileName string) (string, er
 		return matches[1], nil
 	}
 
-	errMsg := fmt.Sprintf("could not find chapter number in the file name [ regexPattnerUsed: %s | fileNameUsed: %s ]", strRgx, fileName)
-	return "", errors.New(errMsg)
+	app.logger.Warn(
+		fmt.Sprintf("could not find chapter number in the file name [ regexPattnerUsed: %s | fileNameUsed: %s ]", strRgx, fileName))
+	return "", ErrChapterNumberNotFound
 }
 
 func (app *AppContext) createOutputCoverDir() {

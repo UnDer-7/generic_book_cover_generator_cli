@@ -17,14 +17,15 @@ type AppPaths struct {
 }
 
 type AppContext struct {
-	path                         *AppPaths
-	resources                    embed.FS
-	logger                       *slog.Logger
-	regexChapterNumberPrefix     string
-	useMultiThreading            bool
-	shouldCreateBookCoversOutput bool
-	wg                           sync.WaitGroup
-	context                      context.Context
+	path                             *AppPaths
+	resources                        embed.FS
+	logger                           *slog.Logger
+	regexChapterNumberPrefix         string
+	useMultiThreading                bool
+	shouldCreateBookCoversOutput     bool
+	wg                               sync.WaitGroup
+	context                          context.Context
+	skipFileWhenChapterNumberNotFund bool
 }
 
 //go:embed assets
@@ -45,7 +46,9 @@ func main() {
 		panic(err)
 	}
 
+	appCtx.logger.Info("Starting script")
 	appCtx.init()
+	appCtx.logger.Info("Successfully finished script")
 }
 
 func configureFlags(appCtx *AppContext) error {
@@ -61,6 +64,7 @@ func configureFlags(appCtx *AppContext) error {
 	flag.StringVar(&appCtx.regexChapterNumberPrefix, "prefix", defaultChapterPrefix, "Name that prefix the chapter number")
 	flag.BoolVar(&appCtx.useMultiThreading, "t", false, "Whether to create the chapters covers using multi threading or not. TRUE=Multi Thread | FALSE=Single Thread")
 	flag.BoolVar(&appCtx.shouldCreateBookCoversOutput, "c", false, "Create output cover folder if does not exists")
+	flag.BoolVar(&appCtx.skipFileWhenChapterNumberNotFund, "s", true, "Skip file when chapter number is not found")
 
 	flag.Parse()
 

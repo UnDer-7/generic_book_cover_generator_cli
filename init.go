@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -44,7 +45,13 @@ func (app *AppContext) runInSingleThreadMode(fileNames []string) {
 func (app *AppContext) processSingleChapter(fileName string) {
 	chapterNumber, err := app.extractChapterNumberFromFile(fileName)
 	if err != nil {
-		panic(err)
+		if errors.Is(err, ErrChapterNumberNotFound) {
+			if app.skipFileWhenChapterNumberNotFund {
+				app.logger.Debug(fmt.Sprintf("could not extract chapter number from file name %s", fileName))
+				return
+			}
+			panic(err)
+		}
 	}
 
 	app.logger.Info(fmt.Sprintf("processing chapter %s", chapterNumber))
