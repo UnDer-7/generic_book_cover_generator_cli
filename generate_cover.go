@@ -13,39 +13,13 @@ import (
 	"strings"
 )
 
-func (app *AppContext) generateImg(imageText, fileOutputName string) {
-	// Open the JPEG file
-	file, err := app.resources.Open(app.path.backgroundImage)
-	if err != nil {
-		app.logger.Warn("Error while opening black_background")
-		panic(err)
-	}
-	defer file.Close()
-
-	img, err := jpeg.Decode(file)
-	if err != nil {
-		app.logger.Warn("Error while decoding black_background")
-		panic(err)
-	}
+func (app *AppContext) generateImg(imageText, fileOutputName string, bgImage image.Image, font *truetype.Font) {
 
 	// Create an RGBA image to draw on
-	rgba := image.NewRGBA(img.Bounds())
+	rgba := image.NewRGBA(bgImage.Bounds())
 
 	// Draw the source image onto the RGBA image
-	draw.Draw(rgba, rgba.Bounds(), img, image.Point{}, draw.Src)
-
-	// Load the font
-	fontBytes, err := app.resources.ReadFile(app.path.font)
-	if err != nil {
-		app.logger.Warn("Error while reading font file")
-		panic(err)
-	}
-
-	font, err := freetype.ParseFont(fontBytes)
-	if err != nil {
-		app.logger.Warn("Error while parsing font file")
-		panic(err)
-	}
+	draw.Draw(rgba, rgba.Bounds(), bgImage, image.Point{}, draw.Src)
 
 	// Initialize the context for drawing
 	c := freetype.NewContext()
@@ -56,7 +30,6 @@ func (app *AppContext) generateImg(imageText, fileOutputName string) {
 	c.SetSrc(image.NewUniform(color.White))
 
 	// Define the text
-
 	lines := strings.Split(imageText, "\n")
 
 	// Find the maximum font size that fits the width of the image
@@ -84,8 +57,9 @@ func (app *AppContext) generateImg(imageText, fileOutputName string) {
 		width := calculateTextWidth(font, line, fontSize)
 		x := (rgba.Bounds().Dx() - width) / 2
 		pt := freetype.Pt(x, startY)
-		_, err = c.DrawString(line, pt)
+		_, err := c.DrawString(line, pt)
 		if err != nil {
+			app.logger.Warn("Error while drawing text")
 			panic(err)
 		}
 		startY += lineHeight

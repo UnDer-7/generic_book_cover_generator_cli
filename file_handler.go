@@ -3,6 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
+	"image"
+	"image/jpeg"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -11,6 +16,41 @@ import (
 var (
 	ErrChapterNumberNotFound = errors.New("could not find chapter number in the file name")
 )
+
+func (app *AppContext) openBackgroundImage() fs.File {
+	file, err := app.resources.Open(app.path.backgroundImage)
+	if err != nil {
+		app.logger.Warn("Error while opening black_background")
+		panic(err)
+	}
+
+	return file
+}
+
+func (app *AppContext) decodeToJpeg(file fs.File) image.Image {
+	img, err := jpeg.Decode(file)
+	if err != nil {
+		app.logger.Warn("Error while decoding black_background")
+		panic(err)
+	}
+	return img
+}
+
+func (app *AppContext) LoadFont() *truetype.Font {
+	fontBytes, err := app.resources.ReadFile(app.path.font)
+	if err != nil {
+		app.logger.Warn("Error while reading font file")
+		panic(err)
+	}
+
+	font, err := freetype.ParseFont(fontBytes)
+	if err != nil {
+		app.logger.Warn("Error while parsing font file")
+		panic(err)
+	}
+
+	return font
+}
 
 func (app *AppContext) getFileNames() []string {
 	entries, err := os.ReadDir(app.path.bookFolder)
