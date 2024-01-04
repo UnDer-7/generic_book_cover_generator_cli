@@ -28,6 +28,7 @@ type AppContext struct {
 	skipFileWhenChapterNumberNotFund bool
 	processOnlyBooksWithExtension    string
 	customCoverName                  string
+	bookCoverOutputExtension         string
 }
 
 //go:embed assets
@@ -35,9 +36,10 @@ var assets embed.FS
 
 func main() {
 	appCtx := &AppContext{
-		path:      &AppPaths{},
-		resources: assets,
-		context:   context.Background(),
+		path:                     &AppPaths{},
+		resources:                assets,
+		context:                  context.Background(),
+		bookCoverOutputExtension: ".jpg",
 		logger: slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 			Level: slog.LevelDebug,
 		})),

@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 )
 
 var (
@@ -60,16 +61,40 @@ func (app *AppContext) getFileNames() []string {
 	}
 
 	var fileNames []string
+	var covers []string
 
 	for _, entry := range entries {
 		fileName := entry.Name()
 		fileExtension := filepath.Ext(fileName)
-		if fileExtension == app.processOnlyBooksWithExtension {
+		switch fileExtension {
+		case app.bookCoverOutputExtension:
+			covers = append(covers, fileName)
+		case app.processOnlyBooksWithExtension:
 			fileNames = append(fileNames, fileName)
 		}
 	}
 
-	return fileNames
+	var validFileNames []string
+
+	canAdd := func(fileNameSanitized string) bool {
+		for _, cover := range covers {
+			coverSanitized := strings.TrimSuffix(cover, filepath.Ext(app.bookCoverOutputExtension))
+
+			if coverSanitized == fileNameSanitized {
+				return false
+			}
+		}
+		return true
+	}
+
+	for _, fileName := range fileNames {
+		fileNameSanitized := strings.TrimSuffix(fileName, filepath.Ext(app.processOnlyBooksWithExtension))
+		if canAdd(fileNameSanitized) {
+			validFileNames = append(validFileNames, fileName)
+		}
+	}
+
+	return validFileNames
 }
 
 func (app *AppContext) extractChapterNumberFromFile(fileName string) (string, error) {

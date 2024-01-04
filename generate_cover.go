@@ -66,7 +66,7 @@ func (app *AppContext) generateImg(imageText, fileOutputName string, bgImage ima
 	}
 
 	// Save the image to a new file
-	outFile, err := os.Create(app.path.bookCoversOutput + "/" + fileOutputName + ".jpg")
+	outFile, err := os.Create(app.path.bookCoversOutput + "/" + fileOutputName + app.bookCoverOutputExtension)
 	if err != nil {
 		app.logger.Warn("Error while creating output file")
 		panic(err)
