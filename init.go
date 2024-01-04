@@ -60,9 +60,10 @@ func (app *AppContext) runInSingleThreadMode(fileNames []string, bgImage image.I
 
 func (app *AppContext) processChapterCustom(bgImage image.Image, font *truetype.Font) {
 	app.logger.Info(fmt.Sprintf("processing custom cover %s", app.customCoverName))
+	app.logger.Debug(fmt.Sprintf("new line delimiter: %s", app.newLineDelimiter))
 
-	// ToDo: fix bug. When passing: -custom="Last of the day \n now plz" the "\n" is ignored and doesnt break line
-	app.generateImg(app.customCoverName, "custom_cover", bgImage, font)
+	customCoverNameSanitized := strings.Replace(app.customCoverName, app.newLineDelimiter, "\n", -1)
+	app.generateImg(customCoverNameSanitized, "custom_cover", bgImage, font)
 
 	app.logger.Info(fmt.Sprintf("finished processing custom cover %s", app.customCoverName))
 }

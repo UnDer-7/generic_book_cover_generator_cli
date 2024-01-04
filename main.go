@@ -29,6 +29,7 @@ type AppContext struct {
 	processOnlyBooksWithExtension    string
 	customCoverName                  string
 	bookCoverOutputExtension         string
+	newLineDelimiter                 string
 }
 
 //go:embed assets
@@ -71,6 +72,7 @@ func configureFlags(appCtx *AppContext) error {
 	flag.BoolVar(&appCtx.skipFileWhenChapterNumberNotFund, "s", true, "Skip file when chapter number is not found")
 	flag.StringVar(&appCtx.processOnlyBooksWithExtension, "e", ".cbz", "File extensions to be used in the processing (pass with dot, ex: .cbz, .jpg, etc...)")
 	flag.StringVar(&appCtx.customCoverName, "custom", "", "A custom cover name to be used in the image generation")
+	flag.StringVar(&appCtx.newLineDelimiter, "delimiter", "___", "The value which will be replaced by a new line (\\n). It is to be used with -custom flag")
 
 	flag.Parse()
 
