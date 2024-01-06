@@ -4,6 +4,7 @@ import (
 	"context"
 	"embed"
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 	"sync"
@@ -30,6 +31,7 @@ type AppContext struct {
 	customCoverName                  string
 	bookCoverOutputExtension         string
 	newLineDelimiter                 string
+	filesNotProcessed                []string
 }
 
 //go:embed assets
@@ -54,6 +56,14 @@ func main() {
 	appCtx.logger.Info("Starting script")
 	appCtx.init()
 	appCtx.logger.Info("Successfully finished script")
+
+	if len(appCtx.filesNotProcessed) > 0 {
+		fileName := ""
+		for _, file := range appCtx.filesNotProcessed {
+			fileName = fmt.Sprintf("%s { %s } -", fileName, file)
+		}
+		appCtx.logger.Info("Files not processed" + fileName)
+	}
 }
 
 func configureFlags(appCtx *AppContext) error {

@@ -71,6 +71,7 @@ func (app *AppContext) processChapterCustom(bgImage image.Image, font *truetype.
 func (app *AppContext) processChapter(fileName string, bgImage image.Image, font *truetype.Font) {
 	chapterNumber, err := app.extractChapterNumberFromFile(fileName)
 	if err != nil {
+		app.filesNotProcessed = append(app.filesNotProcessed, fileName)
 		if errors.Is(err, ErrChapterNumberNotFound) {
 			if app.skipFileWhenChapterNumberNotFund {
 				app.logger.Debug(fmt.Sprintf("could not extract chapter number from file name %s", fileName))
