@@ -2,7 +2,7 @@
 # https://gist.github.com/eleniums/06c30c50befcfe36e7840ca46c9ebacd
 
 EXECUTABLE=bkc
-VERSION=$(shell git describe --tags --always --long --dirty)
+VERSION=$(shell git describe --tags --always)
 WINDOWS=$(EXECUTABLE)_windows_amd64_$(VERSION).exe
 LINUX=$(EXECUTABLE)_linux_amd64_$(VERSION)
 DARWIN=$(EXECUTABLE)_darwin_amd64_$(VERSION)
